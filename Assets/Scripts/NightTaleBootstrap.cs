@@ -1043,7 +1043,7 @@ namespace NightTale
             _authSignupForm = new GameObject("SignupForm", typeof(RectTransform));
             _authSignupForm.transform.SetParent(card, false);
             var sf = _authSignupForm.GetComponent<RectTransform>();
-            sf.SetAnchor(0, 0, 1, 1, 30, -650, -30, 60);
+            sf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
 
             _suName = MakeInputField("SuName", sf, "Display name");
             _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
@@ -1060,7 +1060,7 @@ namespace NightTale
             _authLoginForm = new GameObject("LoginForm", typeof(RectTransform));
             _authLoginForm.transform.SetParent(card, false);
             var lf = _authLoginForm.GetComponent<RectTransform>();
-            lf.SetAnchor(0, 0, 1, 1, 30, -650, -30, 60);
+            lf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
             _liIdentifier = MakeInputField("LiIdentifier", lf, "Username or email");
             _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
             _liPassword = MakeInputField("LiPassword", lf, "Password", InputField.ContentType.Password);
