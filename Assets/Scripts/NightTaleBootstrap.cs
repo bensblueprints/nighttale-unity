@@ -35,7 +35,7 @@ namespace NightTale
         private TextMeshProUGUI _turnsText;
         private RawImage _portrait;
         private TextMeshProUGUI _storyText;
-        private Transform _choicesPanel;
+        private RectTransform _choicesPanel;
         private Button _rollButton;
         private Button _backButton;
 

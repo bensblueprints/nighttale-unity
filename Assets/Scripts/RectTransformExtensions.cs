@@ -14,5 +14,16 @@ namespace NightTale
             rt.offsetMin = new Vector2(offMinX, offMinY);
             rt.offsetMax = new Vector2(offMaxX, offMaxY);
         }
+
+        /// <summary>Convenience: set anchors + offsets in one call (offsets as Vector2).</summary>
+        public static void SetAnchor(this RectTransform rt,
+            float minX, float minY, float maxX, float maxY,
+            Vector2 offsetMin, Vector2 offsetMax)
+        {
+            rt.anchorMin = new Vector2(minX, minY);
+            rt.anchorMax = new Vector2(maxX, maxY);
+            rt.offsetMin = offsetMin;
+            rt.offsetMax = offsetMax;
+        }
     }
 }
