@@ -43,6 +43,20 @@ namespace NightTale.Editor
                 Debug.LogError("WebGL build FAILED: " + report.summary.result);
                 EditorApplication.Exit(1);
             }
+            // Patch the default template's 960x600 landscape canvas to portrait (540x960).
+            // NightTale's UI is a 1080x1920 portrait layout, so a landscape canvas clips
+            // the picker/story lists. This keeps every build portrait without a custom template.
+            var indexPath = System.IO.Path.Combine(outDir, "index.html");
+            if (System.IO.File.Exists(indexPath))
+            {
+                var html = System.IO.File.ReadAllText(indexPath);
+                html = html.Replace("width=960 height=600", "width=540 height=960");
+                html = html.Replace("canvas.style.width = \"960px\"", "canvas.style.width = \"540px\"");
+                html = html.Replace("canvas.style.height = \"600px\"", "canvas.style.height = \"960px\"");
+                System.IO.File.WriteAllText(indexPath, html);
+                Debug.Log("WebGL canvas patched to portrait (540x960)");
+            }
+
             Debug.Log("WebGL build SUCCEEDED -> " + outDir);
         }
     }

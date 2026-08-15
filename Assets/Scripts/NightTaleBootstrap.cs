@@ -176,6 +176,8 @@ namespace NightTale
             var go = new GameObject("Game_" + g.slug, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0, 1); rt.anchorMax = new Vector2(1, 1);
+            rt.pivot = new Vector2(0.5f, 1);
             rt.sizeDelta = new Vector2(0, 170);
             go.GetComponent<Image>().color = new Color(0.14f, 0.14f, 0.24f);
 
@@ -331,7 +333,9 @@ namespace NightTale
                     label = b.label + " — " + b.description;
                 var go = new GameObject("Choice", typeof(RectTransform), typeof(Image), typeof(Button));
                 go.transform.SetParent(_choicesPanel, false);
-                go.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 120);
+                var cr = go.GetComponent<RectTransform>();
+                cr.anchorMin = new Vector2(0, 1); cr.anchorMax = new Vector2(1, 1); cr.pivot = new Vector2(0.5f, 1);
+                cr.sizeDelta = new Vector2(0, 120);
                 go.GetComponent<Image>().color = new Color(0.16f, 0.16f, 0.28f);
                 var txt = Text("ChoiceLabel", go.transform, label, 36, TextAnchor.MiddleCenter);
                 txt.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
