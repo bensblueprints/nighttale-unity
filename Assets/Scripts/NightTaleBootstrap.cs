@@ -93,6 +93,7 @@ namespace NightTale
             var t = go.GetComponent<Text>();
             t.text = content; t.fontSize = size; t.alignment = align;
             t.color = color ?? Color.white;
+            t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
             return t;
         }
