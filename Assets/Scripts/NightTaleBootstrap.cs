@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
+
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -31,17 +31,17 @@ namespace NightTale
 
         // story view
         private GameObject _storyView;
-        private TextMeshProUGUI _titleText;
-        private TextMeshProUGUI _turnsText;
+        private Text _titleText;
+        private Text _turnsText;
         private RawImage _portrait;
-        private TextMeshProUGUI _storyText;
+        private Text _storyText;
         private RectTransform _choicesPanel;
         private Button _rollButton;
         private Button _backButton;
 
         // paywall
         private GameObject _paywall;
-        private TextMeshProUGUI _paywallMsg;
+        private Text _paywallMsg;
 
         private string _sessionId;
         private bool _busy;
@@ -85,15 +85,15 @@ namespace NightTale
             return rt;
         }
 
-        private TextMeshProUGUI Text(string name, Transform parent, string content, int size,
-            TextAlignmentOptions align = TextAlignmentOptions.TopLeft, Color? color = null)
+        private Text Text(string name, Transform parent, string content, int size,
+            TextAnchor align = TextAnchor.UpperLeft, Color? color = null)
         {
-            var go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+            var go = new GameObject(name, typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
-            var t = go.GetComponent<TextMeshProUGUI>();
+            var t = go.GetComponent<Text>();
             t.text = content; t.fontSize = size; t.alignment = align;
             t.color = color ?? Color.white;
-            t.enableWordWrapping = true;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
             return t;
         }
 
@@ -107,7 +107,7 @@ namespace NightTale
             rt.offsetMin = offsetMin; rt.offsetMax = offsetMax;
             var img = go.GetComponent<Image>();
             img.color = new Color(0.16f, 0.16f, 0.28f);
-            var txt = Text(name + "_label", rt, label, 40, TextAlignmentOptions.Center);
+            var txt = Text(name + "_label", rt, label, 40, TextAnchor.MiddleCenter);
             var txtRt = txt.GetComponent<RectTransform>();
             txtRt.anchorMin = Vector2.zero; txtRt.anchorMax = Vector2.one;
             txtRt.offsetMin = Vector2.zero; txtRt.offsetMax = Vector2.zero;
@@ -125,7 +125,7 @@ namespace NightTale
             {
                 var p = Panel("Picker", new Color(0.03f, 0.03f, 0.06f),
                     Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-                Text("PickerTitle", p, "NightTale — Choose Your Story", 52, TextAlignmentOptions.Center)
+                Text("PickerTitle", p, "NightTale — Choose Your Story", 52, TextAnchor.MiddleCenter)
                     .GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 30, -90, -30, -10);
                 var scrollGo = new GameObject("Scroll", typeof(RectTransform), typeof(ScrollRect));
                 scrollGo.transform.SetParent(p, false);
@@ -187,10 +187,10 @@ namespace NightTale
             var p = Panel("StoryView", new Color(0.04f, 0.04f, 0.07f),
                 Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            _titleText = Text("Title", p, "", 42, TextAlignmentOptions.Center);
+            _titleText = Text("Title", p, "", 42, TextAnchor.MiddleCenter);
             _titleText.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 30, -30, 20, -80);
 
-            _turnsText = Text("Turns", p, "", 36, TextAlignmentOptions.Center);
+            _turnsText = Text("Turns", p, "", 36, TextAnchor.MiddleCenter);
             _turnsText.GetComponent<RectTransform>().SetAnchor(1, 1, 1, 1, -280, -30, 0, -80);
 
             var portraitGo = new GameObject("Portrait", typeof(RectTransform), typeof(RawImage));
@@ -290,7 +290,7 @@ namespace NightTale
             if (r.completed)
             {
                 var t = Text("End", _choicesPanel, "The End — thanks for playing!", 40,
-                    TextAlignmentOptions.Center);
+                    TextAnchor.MiddleCenter);
                 t.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 120);
                 _backButton.gameObject.SetActive(true);
                 return;
@@ -310,7 +310,7 @@ namespace NightTale
                 go.transform.SetParent(_choicesPanel, false);
                 go.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 120);
                 go.GetComponent<Image>().color = new Color(0.16f, 0.16f, 0.28f);
-                var txt = Text("ChoiceLabel", go.transform, label, 36, TextAlignmentOptions.Center);
+                var txt = Text("ChoiceLabel", go.transform, label, 36, TextAnchor.MiddleCenter);
                 txt.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
                 var action = b.action;
                 go.GetComponent<Button>().onClick.AddListener(() => Choose(action));
@@ -347,7 +347,7 @@ namespace NightTale
             {
                 var p = Panel("Paywall", new Color(0, 0, 0, 0.9f),
                     Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-                _paywallMsg = Text("PaywallMsg", p, "", 40, TextAlignmentOptions.Center);
+                _paywallMsg = Text("PaywallMsg", p, "", 40, TextAnchor.MiddleCenter);
                 _paywallMsg.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 40, -40, -500, -700);
                 Button("WatchAd", p, "Watch Ad for +5 Turns", Vector2.zero, Vector2.one,
                     new Vector2(80, 0), new Vector2(-80, 0), WatchAd)
