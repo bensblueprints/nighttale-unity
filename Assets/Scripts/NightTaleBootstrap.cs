@@ -347,10 +347,9 @@ namespace NightTale
                 scrollGo.transform.SetParent(p, false);
                 var scrollRt = scrollGo.GetComponent<RectTransform>();
                 scrollRt.SetAnchor(0, 0, 1, 1, 30, -30, -30, -270);
-                var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
+                var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
                 viewport.transform.SetParent(scrollRt, false);
                 viewport.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
-                viewport.GetComponent<Image>().color = Color.clear;
                 var content = new GameObject("Content", typeof(RectTransform),
                     typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
                 content.transform.SetParent(viewport.transform, false);
@@ -556,10 +555,9 @@ namespace NightTale
             storyScroll.transform.SetParent(p, false);
             var srt = storyScroll.GetComponent<RectTransform>();
             srt.SetAnchor(0, 0, 1, 1, 30, -620, -30, 420);
-            var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
+            var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
             viewport.transform.SetParent(srt, false);
             viewport.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
-            viewport.GetComponent<Image>().color = Color.clear;
             var content = new GameObject("Content", typeof(RectTransform),
                 typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
             content.transform.SetParent(viewport.transform, false);
@@ -1171,13 +1169,10 @@ namespace NightTale
                 var vlg = _accountBody.GetComponent<VerticalLayoutGroup>();
                 vlg.spacing = 14; vlg.childControlWidth = true; vlg.childForceExpandWidth = true;
                 vlg.childControlHeight = true; vlg.childForceExpandHeight = false;
-                _accountActions = new GameObject("AccountActions", typeof(RectTransform),
-                    typeof(HorizontalLayoutGroup)).GetComponent<RectTransform>();
+                _accountActions = new GameObject("AccountActions", typeof(RectTransform))
+                    .GetComponent<RectTransform>();
                 _accountActions.SetParent(card, false);
                 _accountActions.SetAnchor(0, 0, 1, 0, 40, 30, -40, 130);
-                var hlg = _accountActions.GetComponent<HorizontalLayoutGroup>();
-                hlg.spacing = 12; hlg.childControlWidth = true; hlg.childForceExpandWidth = true;
-                hlg.childControlHeight = true; hlg.childForceExpandHeight = true;
             }
 
             foreach (Transform c in _accountBody) Destroy(c.gameObject);
@@ -1188,10 +1183,10 @@ namespace NightTale
                 AddAccountRow(_accountBody, "Status", "You're playing as a guest with " + GUEST_TURNS + " free turns. Create a free account to keep your progress and watch ads for more turns.");
                 Button("AcctSignup", _accountActions, "Create free account", Vector2.zero, Vector2.one,
                         Vector2.zero, Vector2.zero, () => { CloseModal(_accountModal); ShowAuth(true); })
-                    .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, 0, 0);
+                    .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, -10, 100);
                 Button("AcctClose", _accountActions, "Close", Vector2.zero, Vector2.one,
                         Vector2.zero, Vector2.zero, () => CloseModal(_accountModal))
-                    .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 0, 0, 0, 0);
+                    .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 10, 0, 0, 100);
             }
             else
             {
@@ -1205,10 +1200,10 @@ namespace NightTale
 
                 Button("AcctLogout", _accountActions, "Log out", Vector2.zero, Vector2.one,
                         Vector2.zero, Vector2.zero, Logout)
-                    .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, 0, 0);
+                    .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, -10, 100);
                 Button("AcctClose", _accountActions, "Close", Vector2.zero, Vector2.one,
                         Vector2.zero, Vector2.zero, () => CloseModal(_accountModal))
-                    .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 0, 0, 0, 0);
+                    .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 10, 0, 0, 100);
             }
 
             _accountModal.SetActive(true);
