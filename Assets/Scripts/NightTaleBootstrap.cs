@@ -1158,71 +1158,60 @@ namespace NightTale
         {
             if (_accountModal == null)
             {
-                var overlay = ModalOverlay("AccountModal", new Vector2(460, 460), out var card);
+                var overlay = ModalOverlay("AccountModal", new Vector2(460, 560), out var card);
                 _accountModal = overlay.gameObject;
-                Text("AccountTitle", card, "Account", 44, TextAnchor.MiddleCenter)
-                    .GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 30, -70, -30, -10);
-                _accountBody = new GameObject("AccountBody", typeof(RectTransform),
-                    typeof(VerticalLayoutGroup)).GetComponent<RectTransform>();
+                Text("AccountTitle", card, "Account", 46, TextAnchor.MiddleCenter)
+                    .GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 30, -80, -30, -20);
+                _accountBody = new GameObject("AccountBody", typeof(RectTransform))
+                    .GetComponent<RectTransform>();
                 _accountBody.SetParent(card, false);
-                _accountBody.SetAnchor(0, 1, 1, 1, 40, -90, -40, -160);
-                var vlg = _accountBody.GetComponent<VerticalLayoutGroup>();
-                vlg.spacing = 14; vlg.childControlWidth = true; vlg.childForceExpandWidth = true;
-                vlg.childControlHeight = true; vlg.childForceExpandHeight = false;
+                _accountBody.SetAnchor(0, 1, 1, 1, 50, -100, -50, -760);
                 _accountActions = new GameObject("AccountActions", typeof(RectTransform))
                     .GetComponent<RectTransform>();
                 _accountActions.SetParent(card, false);
-                _accountActions.SetAnchor(0, 0, 1, 0, 40, 30, -40, 130);
+                _accountActions.SetAnchor(0, 0, 1, 0, 40, 40, -40, 170);
             }
 
             foreach (Transform c in _accountBody) Destroy(c.gameObject);
             foreach (Transform c in _accountActions) Destroy(c.gameObject);
 
-            if (_user == null)
+            bool loggedIn = _user != null;
+            string bodyText;
+            if (loggedIn)
             {
-                AddAccountRow(_accountBody, "Status", "You're playing as a guest with " + GUEST_TURNS + " free turns. Create a free account to keep your progress and watch ads for more turns.");
-                Button("AcctSignup", _accountActions, "Create free account", Vector2.zero, Vector2.one,
-                        Vector2.zero, Vector2.zero, () => { CloseModal(_accountModal); ShowAuth(true); })
-                    .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, -10, 100);
-                Button("AcctClose", _accountActions, "Close", Vector2.zero, Vector2.one,
-                        Vector2.zero, Vector2.zero, () => CloseModal(_accountModal))
-                    .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 10, 0, 0, 100);
+                var u = _user;
+                bodyText = "Username: " + u.username + "\n\n" +
+                           "Name: " + (string.IsNullOrEmpty(u.name) ? "\u2014" : u.name) + "\n\n" +
+                           "Email: " + (string.IsNullOrEmpty(u.email) ? "\u2014" : u.email) + "\n\n" +
+                           "Plan: " + (u.subscribed ? "Unlimited" : "Free") + "\n\n" +
+                           "Free turns: " + (u.subscribed ? "\u221e" : u.free_turns_remaining.ToString()) + "\n\n" +
+                           "Credits: " + (u.credits > 0 ? u.credits.ToString() : "0");
             }
             else
             {
-                var u = _user;
-                AddAccountRow(_accountBody, "Username", u.username);
-                AddAccountRow(_accountBody, "Name", string.IsNullOrEmpty(u.name) ? "\u2014" : u.name);
-                AddAccountRow(_accountBody, "Email", string.IsNullOrEmpty(u.email) ? "\u2014" : u.email);
-                AddAccountRow(_accountBody, "Plan", u.subscribed ? "Unlimited" : "Free");
-                AddAccountRow(_accountBody, "Free turns", u.subscribed ? "\u221e" : u.free_turns_remaining.ToString());
-                AddAccountRow(_accountBody, "Credits", (u.credits > 0 ? u.credits.ToString() : "0"));
+                bodyText = "You're playing as a guest with " + GUEST_TURNS + " free turns.\n\nCreate a free account to keep your progress and watch ads for more turns.";
+            }
 
+            var body = Text("AccountBodyText", _accountBody, bodyText, 36, TextAnchor.UpperLeft);
+            body.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
+
+            if (loggedIn)
+            {
                 Button("AcctLogout", _accountActions, "Log out", Vector2.zero, Vector2.one,
                         Vector2.zero, Vector2.zero, Logout)
                     .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, -10, 100);
-                Button("AcctClose", _accountActions, "Close", Vector2.zero, Vector2.one,
-                        Vector2.zero, Vector2.zero, () => CloseModal(_accountModal))
-                    .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 10, 0, 0, 100);
             }
+            else
+            {
+                Button("AcctSignup", _accountActions, "Create free account", Vector2.zero, Vector2.one,
+                        Vector2.zero, Vector2.zero, () => { CloseModal(_accountModal); ShowAuth(true); })
+                    .GetComponent<RectTransform>().SetAnchor(0, 0, 0.5f, 0, 0, 0, -10, 100);
+            }
+            Button("AcctClose", _accountActions, "Close", Vector2.zero, Vector2.one,
+                    Vector2.zero, Vector2.zero, () => CloseModal(_accountModal))
+                .GetComponent<RectTransform>().SetAnchor(0.5f, 0, 1, 0, 10, 0, 0, 100);
 
             _accountModal.SetActive(true);
-        }
-
-        private void AddAccountRow(Transform parent, string key, string value)
-        {
-            var row = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup));
-            row.transform.SetParent(parent, false);
-            var hlg = row.GetComponent<HorizontalLayoutGroup>();
-            hlg.childControlWidth = true; hlg.childForceExpandWidth = true;
-            hlg.childControlHeight = true; hlg.childForceExpandHeight = false;
-            var rt = row.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0, 1); rt.anchorMax = new Vector2(1, 1);
-            rt.pivot = new Vector2(0.5f, 1);
-            var k = Text("K", row.transform, key, 32, TextAnchor.MiddleLeft, new Color(1, 1, 1, 0.6f));
-            var v = Text("V", row.transform, value, 32, TextAnchor.MiddleRight, Color.white);
-            k.GetComponent<RectTransform>().SetAnchor(0, 0, 0.35f, 1, 0, 0, 0, 0);
-            v.GetComponent<RectTransform>().SetAnchor(0.35f, 0, 1, 1, 0, 0, 0, 0);
         }
 
         private void Logout()
