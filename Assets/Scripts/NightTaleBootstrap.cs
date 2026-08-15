@@ -131,7 +131,7 @@ namespace NightTale
                 var scrollGo = new GameObject("Scroll", typeof(RectTransform), typeof(ScrollRect));
                 scrollGo.transform.SetParent(p, false);
                 var scrollRt = scrollGo.GetComponent<RectTransform>();
-                scrollRt.SetAnchor(0, 0, 0, 1, 30, -30, 160, -60);
+                scrollRt.SetAnchor(0, 0, 1, 1, 30, -30, -30, -130);
                 var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(Image),
                     typeof(Mask));
                 viewport.transform.SetParent(scrollRt, false);
@@ -144,8 +144,9 @@ namespace NightTale
                 crt.anchorMin = new Vector2(0, 1); crt.anchorMax = new Vector2(1, 1);
                 crt.pivot = new Vector2(0.5f, 1);
                 var vlg = content.GetComponent<VerticalLayoutGroup>();
-                vlg.spacing = 20; vlg.padding = new RectOffset(20, 20, 20, 20);
-                vlg.childControlHeight = true; vlg.childForceExpandHeight = false;
+                vlg.spacing = 16; vlg.padding = new RectOffset(20, 20, 20, 20);
+                vlg.childControlWidth = true; vlg.childForceExpandWidth = true;
+                vlg.childControlHeight = false; vlg.childForceExpandHeight = false;
                 var csf = content.GetComponent<ContentSizeFitter>();
                 csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
                 var sr = scrollGo.GetComponent<ScrollRect>();
@@ -163,14 +164,35 @@ namespace NightTale
                     foreach (var g in games)
                     {
                         if (g.coming_soon) continue;
-                        var label = g.title + (g.subtitle != null ? " — " + g.subtitle : "");
-                        Button("Game_" + g.slug, content.transform, label,
-                            Vector2.zero, Vector2.one, Vector2.zero, new Vector2(0, -130),
-                            () => StartGame(g.slug));
+                        AddGameButton(content.transform, g);
                     }
                 }));
             }
             _picker.SetActive(true);
+        }
+
+        private void AddGameButton(Transform parent, GameInfo g)
+        {
+            var go = new GameObject("Game_" + g.slug, typeof(RectTransform), typeof(Image), typeof(Button));
+            go.transform.SetParent(parent, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 170);
+            go.GetComponent<Image>().color = new Color(0.14f, 0.14f, 0.24f);
+
+            var coverGo = new GameObject("Cover", typeof(RectTransform), typeof(RawImage));
+            coverGo.transform.SetParent(rt, false);
+            var crt = coverGo.GetComponent<RectTransform>();
+            crt.SetAnchor(0, 0, 0, 1, 12, 12, 158, -12);
+            var coverImg = coverGo.GetComponent<RawImage>();
+            coverImg.color = new Color(0.22f, 0.22f, 0.3f);
+
+            var label = g.title + (g.subtitle != null ? "\n" + g.subtitle : "");
+            var txt = Text("Label", rt, label, 36, TextAnchor.MiddleLeft);
+            txt.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 176, 0, -16, 0);
+
+            go.GetComponent<Button>().onClick.AddListener(() => StartGame(g.slug));
+            if (!string.IsNullOrEmpty(g.cover))
+                StartCoroutine(LoadImage(coverImg, g.cover));
         }
 
         private void StartGame(string slug)
