@@ -554,7 +554,7 @@ namespace NightTale
             var storyScroll = new GameObject("StoryScroll", typeof(RectTransform), typeof(ScrollRect));
             storyScroll.transform.SetParent(p, false);
             var srt = storyScroll.GetComponent<RectTransform>();
-            srt.SetAnchor(0, 0, 1, 1, 30, -620, -30, 420);
+            srt.SetAnchor(0, 0, 1, 1, 30, 420, -30, -620);
             var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
             viewport.transform.SetParent(srt, false);
             viewport.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
