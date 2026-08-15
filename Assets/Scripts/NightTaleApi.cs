@@ -122,25 +122,71 @@ namespace NightTale
             req.Dispose();
         }
 
-        public static IEnumerator Login(string email, string password, Action<string> onDone)
+        public static IEnumerator Me(Action<UserState, string> onDone)
         {
-            // On success the response body carries session_token (captured above);
-            // a follow-up /api/account call returns the user state. onDone(null) == success.
-            var req = Request("POST", "/api/auth/login", new { email = email, password = password });
+            // Detect an existing session: /api/me returns user_state when a valid
+            // session token is present, otherwise 401. No session == guest.
+            var req = Request("GET", "/api/me", null);
             yield return req.SendWebRequest();
             CaptureTokens(req.downloadHandler.text);
-            onDone(req.result == UnityWebRequest.Result.Success ? null : req.downloadHandler.text);
+            if (req.result == UnityWebRequest.Result.Success)
+                onDone(Safe<UserState>(req), null);
+            else
+                onDone(null, ErrorMessage(req));
             req.Dispose();
         }
 
-        public static IEnumerator Register(string email, string password, string name, Action<string> onDone)
+        public static IEnumerator Login(string identifier, string password, Action<UserState, string> onDone)
         {
-            var req = Request("POST", "/api/auth/register",
-                new { email = email, password = password, name = name });
+            // identifier may be a username or email; backend matches either.
+            var req = Request("POST", "/api/auth/login",
+                new { username = identifier, password = password });
             yield return req.SendWebRequest();
             CaptureTokens(req.downloadHandler.text);
-            onDone(req.result == UnityWebRequest.Result.Success ? null : req.downloadHandler.text);
+            if (req.result == UnityWebRequest.Result.Success)
+                onDone(Safe<UserState>(req), null);
+            else
+                onDone(null, ErrorMessage(req));
             req.Dispose();
+        }
+
+        public static IEnumerator Register(string username, string email, string name,
+            string password, Action<UserState, string> onDone)
+        {
+            var req = Request("POST", "/api/auth/register",
+                new { username = username, email = email, name = name, password = password, tos_accept = true });
+            yield return req.SendWebRequest();
+            CaptureTokens(req.downloadHandler.text);
+            if (req.result == UnityWebRequest.Result.Success)
+                onDone(Safe<UserState>(req), null);
+            else
+                onDone(null, ErrorMessage(req));
+            req.Dispose();
+        }
+
+        public static IEnumerator Logout(Action onDone)
+        {
+            var req = Request("POST", "/api/auth/logout", new { });
+            yield return req.SendWebRequest();
+            ClearSession();
+            if (onDone != null) onDone();
+            req.Dispose();
+        }
+
+        private static string ErrorMessage(UnityWebRequest req)
+        {
+            if (string.IsNullOrEmpty(req.downloadHandler.text)) return req.error ?? "Request failed";
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<Dictionary<string, object>>(req.downloadHandler.text);
+                if (obj != null)
+                {
+                    if (obj.TryGetValue("error", out var e) && e != null) return e.ToString();
+                    if (obj.TryGetValue("message", out var m) && m != null) return m.ToString();
+                }
+                return req.downloadHandler.text;
+            }
+            catch { return req.error ?? "Request failed"; }
         }
 
         public static IEnumerator AdSlot(Action<AdSlotResponse> onDone)

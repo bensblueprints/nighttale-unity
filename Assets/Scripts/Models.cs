@@ -60,6 +60,68 @@ namespace NightTale
     }
 
     [Serializable]
+    public class OddsBands
+    {
+        public double? success;
+        public double? mixed;
+        public double? failure;
+    }
+
+    [Serializable]
+    public class OddsInfo
+    {
+        public string check_label;
+        public string label;
+        public string reason;
+        public OddsBands bands;
+    }
+
+    [Serializable]
+    public class StageInfo
+    {
+        public string title;
+        public string goal;
+    }
+
+    [Serializable]
+    public class StageChangedInfo
+    {
+        public string title;
+    }
+
+    [Serializable]
+    public class StageRollInfo
+    {
+        public int? value;
+        public string band;
+    }
+
+    [Serializable]
+    public class RollResultInfo
+    {
+        public string stat;
+        public int roll;
+        public int modifier;
+        public int dc;
+        public bool success;
+    }
+
+    [Serializable]
+    public class DiceInfo
+    {
+        public List<int> rolls;
+        public int? value;
+    }
+
+    [Serializable]
+    public class StageStatInfo
+    {
+        public string key;
+        public string label;
+        public object value;
+    }
+
+    [Serializable]
     public class StoryResponse
     {
         public string session_id;
@@ -78,12 +140,26 @@ namespace NightTale
         public int gold;
         public List<string> inventory;
         public string location;
-        public Dictionary<string, int> stats;
+        public Dictionary<string, object> stats;
         public UserState state;
         public GameMeta game;
         public RollRequired roll_required;
         public string error;
         public string message;
+        public int? guest_turns_left;
+        public string language;
+
+        // Stage-engine extras the HTML5 client renders.
+        public OddsInfo odds;
+        public StageInfo stage;
+        public StageChangedInfo stage_changed;
+        public StageRollInfo stage_roll;
+        public RollResultInfo roll_result;
+        public DiceInfo dice;
+        public Dictionary<string, object> deltas;
+        public object ending;
+        public List<StageStatInfo> stage_stats;
+        public List<StageStatInfo> stage_sheet;
     }
 
     [Serializable]
