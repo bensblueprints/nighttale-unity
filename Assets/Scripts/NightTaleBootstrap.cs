@@ -411,6 +411,11 @@ namespace NightTale
 
         private static IEnumerator LoadImage(RawImage img, string url)
         {
+            // Unity's runtime texture loader can't reliably decode .webp, but the
+            // backend serves PNG originals of every cover/portrait. Rewrite webp
+            // thumb URLs to their PNG source so images actually render in WebGL.
+            if (url != null && url.EndsWith(".webp"))
+                url = url.Replace("/thumbs/", "/").Replace(".webp", ".png");
             var full = url.StartsWith("http") ? url : NightTaleApi.BaseUrl.TrimEnd('/') + url;
             using (var req = UnityWebRequestTexture.GetTexture(full))
             {
