@@ -176,7 +176,7 @@ namespace NightTale
             return go.GetComponent<Button>();
         }
 
-        private InputField InputField(string name, Transform parent, string placeholder,
+        private InputField MakeInputField(string name, Transform parent, string placeholder,
             InputField.ContentType contentType = InputField.ContentType.Standard,
             InputField.LineType lineType = InputField.LineType.SingleLine)
         {
@@ -440,7 +440,7 @@ namespace NightTale
                 _nameSub.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 40, -115, -40, -65);
 
                 Text("NameLabel", card, "Character name", 30);
-                _nameInput = InputField("NameInput", card, "Wanderer");
+                _nameInput = MakeInputField("NameInput", card, "Wanderer");
                 _nameInput.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 40, -240, -40, -155);
                 _nameInput.text = "Wanderer";
 
@@ -598,7 +598,7 @@ namespace NightTale
             inputBar.transform.SetParent(p, false);
             var ibrt = inputBar.GetComponent<RectTransform>();
             ibrt.SetAnchor(0, 0, 1, 0, 20, 20, -20, 130);
-            _actionInput = InputField("ActionInput", ibrt, "What do you do? (or pick a choice above)",
+            _actionInput = MakeInputField("ActionInput", ibrt, "What do you do? (or pick a choice above)",
                 InputField.ContentType.Standard, InputField.LineType.MultiLineNewline);
             _actionInput.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, -100, 0);
             var send = Button("Send", ibrt, "\u2192", Vector2.zero, Vector2.one,
@@ -1047,13 +1047,13 @@ namespace NightTale
             var sf = _authSignupForm.GetComponent<RectTransform>();
             sf.SetAnchor(0, 0, 1, 1, 30, -650, -30, 60);
 
-            _suName = InputField("SuName", sf, "Display name");
+            _suName = MakeInputField("SuName", sf, "Display name");
             _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
-            _suUsername = InputField("SuUsername", sf, "Username");
+            _suUsername = MakeInputField("SuUsername", sf, "Username");
             _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -140, 0, -230);
-            _suEmail = InputField("SuEmail", sf, "Email");
+            _suEmail = MakeInputField("SuEmail", sf, "Email");
             _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -240, 0, -330);
-            _suPassword = InputField("SuPassword", sf, "Password (min 6 chars)", InputField.ContentType.Password);
+            _suPassword = MakeInputField("SuPassword", sf, "Password (min 6 chars)", InputField.ContentType.Password);
             _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -340, 0, -430);
             _suTos = Toggle("Tos", sf, "I am 18+ and accept the Terms of Service.");
             _suTos.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -500, 0, -436);
@@ -1063,9 +1063,9 @@ namespace NightTale
             _authLoginForm.transform.SetParent(card, false);
             var lf = _authLoginForm.GetComponent<RectTransform>();
             lf.SetAnchor(0, 0, 1, 1, 30, -650, -30, 60);
-            _liIdentifier = InputField("LiIdentifier", lf, "Username or email");
+            _liIdentifier = MakeInputField("LiIdentifier", lf, "Username or email");
             _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
-            _liPassword = InputField("LiPassword", lf, "Password", InputField.ContentType.Password);
+            _liPassword = MakeInputField("LiPassword", lf, "Password", InputField.ContentType.Password);
             _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -140, 0, -230);
 
             _authError = Text("AuthError", card, "", 30, TextAnchor.UpperLeft, new Color(1f, 0.5f, 0.5f));
