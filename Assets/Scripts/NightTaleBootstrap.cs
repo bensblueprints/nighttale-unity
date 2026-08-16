@@ -606,14 +606,10 @@ namespace NightTale
             oddsGo.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.16f);
             _oddsCard.gameObject.SetActive(false);
 
-            // Choices.
-            _choicesPanel = new GameObject("Choices", typeof(RectTransform),
-                typeof(VerticalLayoutGroup)).GetComponent<RectTransform>();
+            // Choices (2-column grid).
+            _choicesPanel = new GameObject("Choices", typeof(RectTransform)).GetComponent<RectTransform>();
             _choicesPanel.SetParent(p, false);
             _choicesPanel.SetAnchor(0, 0, 1, 0, 20, 110, -20, 480);
-            var cvlg = _choicesPanel.GetComponent<VerticalLayoutGroup>();
-            cvlg.spacing = 10; cvlg.childControlWidth = true; cvlg.childForceExpandWidth = true;
-            cvlg.childControlHeight = false; cvlg.childForceExpandHeight = false;
 
             // Free-text input bar.
             var inputBar = new GameObject("InputBar", typeof(RectTransform));
@@ -965,7 +961,7 @@ namespace NightTale
                     var label = b.label;
                     if (!string.IsNullOrEmpty(b.description) && b.description != b.label)
                         label = b.label + " \u2014 " + b.description;
-                    AddChoiceButton(label, b.action);
+                    AddChoiceButton(label, b.action, added);
                     added++;
                 }
             }
@@ -973,7 +969,7 @@ namespace NightTale
             {
                 for (int i = 0; i < r.choices.Count; i++)
                 {
-                    AddChoiceButton((i + 1) + ". " + r.choices[i], r.choices[i]);
+                    AddChoiceButton(r.choices[i], r.choices[i], added);
                     added++;
                 }
             }
@@ -987,16 +983,26 @@ namespace NightTale
             }
         }
 
-        private void AddChoiceButton(string label, string action)
+        private void AddChoiceButton(string label, string action, int index)
         {
+            // Compress: cap length, then lay out in a 2-column grid.
+            if (label.Length > 60) label = label.Substring(0, 57) + "...";
+            int row = index / 2;
+            int col = index % 2;
             var go = new GameObject("Choice", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(_choicesPanel, false);
             var cr = go.GetComponent<RectTransform>();
-            cr.anchorMin = new Vector2(0, 1); cr.anchorMax = new Vector2(1, 1);
-            cr.pivot = new Vector2(0.5f, 1); cr.sizeDelta = new Vector2(0, 84);
+            cr.anchorMin = new Vector2(0.5f, 0.5f);
+            cr.anchorMax = new Vector2(0.5f, 0.5f);
+            cr.pivot = new Vector2(0.5f, 0.5f);
+            cr.anchoredPosition = new Vector2(col == 0 ? -125f : 125f, row == 0 ? 90f : -90f);
+            cr.sizeDelta = new Vector2(240, 170);
             go.GetComponent<Image>().color = new Color(0.16f, 0.16f, 0.28f);
-            var txt = Text("ChoiceLabel", go.transform, label, 33, TextAnchor.MiddleCenter);
-            txt.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
+            var txt = Text("ChoiceLabel", go.transform, label, 26, TextAnchor.MiddleCenter);
+            var trt = txt.GetComponent<RectTransform>();
+            trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
+            trt.anchoredPosition = Vector2.zero;
+            trt.sizeDelta = new Vector2(-16, -12);
             var a = action;
             go.GetComponent<Button>().onClick.AddListener(() => Choose(a));
         }
