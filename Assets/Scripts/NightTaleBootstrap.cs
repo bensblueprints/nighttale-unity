@@ -1071,7 +1071,7 @@ namespace NightTale
 
         private void BuildAuthModal()
         {
-            var overlay = ModalOverlay("AuthModal", new Vector2(470, 700), out var card);
+            var overlay = ModalOverlay("AuthModal", new Vector2(470, 780), out var card);
             _authModal = overlay.gameObject;
 
             var tabs = new GameObject("Tabs", typeof(RectTransform), typeof(HorizontalLayoutGroup));
@@ -1093,28 +1093,28 @@ namespace NightTale
             _authSignupForm = new GameObject("SignupForm", typeof(RectTransform));
             _authSignupForm.transform.SetParent(card, false);
             var sf = _authSignupForm.GetComponent<RectTransform>();
-            sf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
+            sf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -150);
 
             _suName = MakeInputField("SuName", sf, "Display name");
-            _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
+            _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -116, 0, -20);
             _suUsername = MakeInputField("SuUsername", sf, "Username");
-            _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -150, 0, -240);
+            _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -221, 0, -125);
             _suEmail = MakeInputField("SuEmail", sf, "Email");
-            _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -260, 0, -350);
+            _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -326, 0, -230);
             _suPassword = MakeInputField("SuPassword", sf, "Password (min 6 chars)", InputField.ContentType.Password);
-            _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -370, 0, -460);
+            _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -431, 0, -335);
             _suTos = Toggle("Tos", sf, "I am 18+ and accept the Terms of Service.");
-            _suTos.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -500, 0, -440);
+            _suTos.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -480, 0, -440);
 
             // Login form.
             _authLoginForm = new GameObject("LoginForm", typeof(RectTransform));
             _authLoginForm.transform.SetParent(card, false);
             var lf = _authLoginForm.GetComponent<RectTransform>();
-            lf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
+            lf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -150);
             _liIdentifier = MakeInputField("LiIdentifier", lf, "Username or email");
-            _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
+            _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -116, 0, -20);
             _liPassword = MakeInputField("LiPassword", lf, "Password", InputField.ContentType.Password);
-            _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -150, 0, -240);
+            _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -221, 0, -125);
 
             _authError = Text("AuthError", card, "", 30, TextAnchor.UpperLeft, new Color(1f, 0.5f, 0.5f));
             _authError.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 0, 30, 130, -30, 200);
