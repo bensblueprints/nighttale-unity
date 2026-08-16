@@ -1215,7 +1215,11 @@ namespace NightTale
                 _accountBody = new GameObject("AccountBody", typeof(RectTransform))
                     .GetComponent<RectTransform>();
                 _accountBody.SetParent(card, false);
-                _accountBody.SetAnchor(0, 1, 1, 1, 50, -100, -50, -760);
+                _accountBody.anchorMin = new Vector2(0, 1);
+                _accountBody.anchorMax = new Vector2(1, 1);
+                _accountBody.pivot = new Vector2(0.5f, 1);
+                _accountBody.anchoredPosition = new Vector2(0, -100);
+                _accountBody.sizeDelta = new Vector2(-100, 280);
                 _accountActions = new GameObject("AccountActions", typeof(RectTransform))
                     .GetComponent<RectTransform>();
                 _accountActions.SetParent(card, false);
