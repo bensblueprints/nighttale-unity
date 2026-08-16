@@ -53,6 +53,8 @@ namespace NightTale
         private Text _titleText;
         private Text _turnsText;
         private RawImage _portrait;
+        private GameObject _portraitGo;
+        private RectTransform _storyLogRect;
         private RectTransform _statBar;
         private Text _chapterBanner;
         private ScrollRect _storyLogScroll;
@@ -143,6 +145,18 @@ namespace NightTale
             rt.offsetMin = offsetMin; rt.offsetMax = offsetMax;
             go.GetComponent<Image>().color = bg;
             return rt;
+        }
+
+        private static Sprite CreateVerticalGradient(Color top, Color bottom, int height = 256)
+        {
+            var tex = new Texture2D(1, height, TextureFormat.RGBA32, false);
+            for (int y = 0; y < height; y++)
+            {
+                float t = (float)y / (height - 1);
+                tex.SetPixel(0, y, Color.Lerp(bottom, top, t));
+            }
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, 1, height), new Vector2(0.5f, 0.5f));
         }
 
         private Text Text(string name, Transform parent, string content, int size,
@@ -335,6 +349,9 @@ namespace NightTale
             {
                 var p = Panel("Picker", new Color(0.03f, 0.03f, 0.06f),
                     Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+                var pImg = p.GetComponent<Image>();
+                pImg.sprite = CreateVerticalGradient(new Color(0.07f, 0.05f, 0.15f), new Color(0.015f, 0.015f, 0.03f));
+                pImg.color = Color.white;
                 _pickerAccountLabel = BuildTopbar(p, false);
 
                 Text("PickerTitle", p, "Choose your story", 54, TextAnchor.MiddleCenter)
@@ -392,26 +409,27 @@ namespace NightTale
             var rt = go.GetComponent<RectTransform>();
             rt.anchorMin = new Vector2(0, 1); rt.anchorMax = new Vector2(1, 1);
             rt.pivot = new Vector2(0.5f, 1);
-            rt.sizeDelta = new Vector2(0, 170);
-            go.GetComponent<Image>().color = new Color(0.14f, 0.14f, 0.24f);
+            rt.sizeDelta = new Vector2(0, 188);
+            go.GetComponent<Image>().color = new Color(0.12f, 0.12f, 0.2f);
+
+            // left accent strip
+            var accent = new GameObject("Accent", typeof(RectTransform), typeof(Image));
+            accent.transform.SetParent(rt, false);
+            var ar = accent.GetComponent<RectTransform>();
+            ar.SetAnchor(0, 0, 0, 1, 0, 0, 8, 0);
+            accent.GetComponent<Image>().color = new Color(0.62f, 0.45f, 0.95f);
 
             var coverGo = new GameObject("Cover", typeof(RectTransform), typeof(RawImage));
             coverGo.transform.SetParent(rt, false);
             var crt = coverGo.GetComponent<RectTransform>();
-            crt.SetAnchor(0, 0, 0, 1, 12, 12, 158, -12);
+            crt.SetAnchor(0, 0, 0, 1, 20, 14, 184, -14);
             var coverImg = coverGo.GetComponent<RawImage>();
             coverImg.color = new Color(0.22f, 0.22f, 0.3f);
 
-            var label = g.title + (string.IsNullOrEmpty(g.subtitle) ? "" : "\n" + g.subtitle);
-            var txt = Text("Label", rt, label, 36, TextAnchor.MiddleLeft);
-            txt.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 176, 0, -16, 0);
-
-            if (!string.IsNullOrEmpty(g.engine_label) || !string.IsNullOrEmpty(g.category))
-            {
-                var badge = Text("Badge", rt, g.engine_label ?? g.category, 26,
-                    TextAnchor.MiddleCenter, new Color(0.9f, 0.75f, 1f));
-                badge.GetComponent<RectTransform>().SetAnchor(1, 1, 1, 1, -180, -40, -12, -8);
-            }
+            var title = Text("Title", rt, g.title, 38, TextAnchor.MiddleLeft);
+            title.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 204, -34, -20, -70);
+            var sub = Text("Sub", rt, g.subtitle ?? "", 27, TextAnchor.MiddleLeft, new Color(1, 1, 1, 0.55f));
+            sub.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 204, -74, -20, -120);
 
             var slug = g.slug;
             go.GetComponent<Button>().onClick.AddListener(() => ShowNameModal(slug));
@@ -522,6 +540,9 @@ namespace NightTale
         {
             var p = Panel("StoryView", new Color(0.04f, 0.04f, 0.07f),
                 Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            var pImg2 = p.GetComponent<Image>();
+            pImg2.sprite = CreateVerticalGradient(new Color(0.08f, 0.06f, 0.17f), new Color(0.02f, 0.02f, 0.04f));
+            pImg2.color = Color.white;
             _storyAccountLabel = BuildTopbar(p, true);
 
             _titleText = Text("Title", p, "", 42, TextAnchor.MiddleCenter);
@@ -536,15 +557,17 @@ namespace NightTale
 
             var portraitGo = new GameObject("Portrait", typeof(RectTransform), typeof(RawImage));
             portraitGo.transform.SetParent(p, false);
+            _portraitGo = portraitGo;
             var prt = portraitGo.GetComponent<RectTransform>();
-            prt.SetAnchor(0, 1, 1, 1, 30, -560, -30, -250);
+            prt.SetAnchor(0, 1, 1, 1, 30, -390, -30, -210);
             _portrait = portraitGo.GetComponent<RawImage>();
             _portrait.color = new Color(0.1f, 0.1f, 0.14f);
+            _portraitGo.SetActive(false);
 
             var statBar = new GameObject("StatBar", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             statBar.transform.SetParent(p, false);
             _statBar = statBar.GetComponent<RectTransform>();
-            _statBar.SetAnchor(0, 1, 1, 1, 30, -610, -30, -566);
+            _statBar.SetAnchor(0, 1, 1, 1, 30, -442, -30, -398);
             var slg = statBar.GetComponent<HorizontalLayoutGroup>();
             slg.spacing = 10; slg.childControlWidth = false; slg.childControlHeight = true;
             slg.childForceExpandWidth = false; slg.childForceExpandHeight = false;
@@ -554,7 +577,8 @@ namespace NightTale
             var storyScroll = new GameObject("StoryScroll", typeof(RectTransform), typeof(ScrollRect));
             storyScroll.transform.SetParent(p, false);
             var srt = storyScroll.GetComponent<RectTransform>();
-            srt.SetAnchor(0, 0, 1, 1, 30, 420, -30, -620);
+            srt.SetAnchor(0, 0, 1, 1, 30, 470, -30, -210);
+            _storyLogRect = srt;
             var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
             viewport.transform.SetParent(srt, false);
             viewport.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
@@ -578,7 +602,7 @@ namespace NightTale
             var oddsGo = new GameObject("Odds", typeof(RectTransform), typeof(Image));
             oddsGo.transform.SetParent(p, false);
             _oddsCard = oddsGo.GetComponent<RectTransform>();
-            _oddsCard.SetAnchor(0, 0, 1, 0, 20, 480, -20, 660);
+            _oddsCard.SetAnchor(0, 0, 1, 0, 20, 470, -20, 650);
             oddsGo.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.16f);
             _oddsCard.gameObject.SetActive(false);
 
@@ -586,7 +610,7 @@ namespace NightTale
             _choicesPanel = new GameObject("Choices", typeof(RectTransform),
                 typeof(VerticalLayoutGroup)).GetComponent<RectTransform>();
             _choicesPanel.SetParent(p, false);
-            _choicesPanel.SetAnchor(0, 0, 1, 0, 20, 140, -20, 470);
+            _choicesPanel.SetAnchor(0, 0, 1, 0, 20, 110, -20, 480);
             var cvlg = _choicesPanel.GetComponent<VerticalLayoutGroup>();
             cvlg.spacing = 10; cvlg.childControlWidth = true; cvlg.childForceExpandWidth = true;
             cvlg.childControlHeight = false; cvlg.childForceExpandHeight = false;
@@ -595,7 +619,7 @@ namespace NightTale
             var inputBar = new GameObject("InputBar", typeof(RectTransform));
             inputBar.transform.SetParent(p, false);
             var ibrt = inputBar.GetComponent<RectTransform>();
-            ibrt.SetAnchor(0, 0, 1, 0, 20, 20, -20, 130);
+            ibrt.SetAnchor(0, 0, 1, 0, 20, 15, -20, 95);
             _actionInput = MakeInputField("ActionInput", ibrt, "What do you do? (or pick a choice above)",
                 InputField.ContentType.Standard, InputField.LineType.MultiLineNewline);
             _actionInput.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, -100, 0);
@@ -605,7 +629,7 @@ namespace NightTale
 
             _rollButton = Button("Roll", p, "Roll the dice", Vector2.zero, Vector2.one,
                 Vector2.zero, Vector2.zero, OnRoll);
-            _rollButton.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 0, 20, 140, -20, 470);
+            _rollButton.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 0, 20, 110, -20, 480);
             _rollButton.gameObject.SetActive(false);
 
             _storyView = p.gameObject;
@@ -645,8 +669,19 @@ namespace NightTale
             if (!string.IsNullOrEmpty(r.story)) AppendStory(r.story, StoryKind.Narration);
             else if (!string.IsNullOrEmpty(r.raw_story)) AppendStory(r.raw_story, StoryKind.Narration);
 
-            if (!string.IsNullOrEmpty(r.portrait)) StartCoroutine(LoadImage(_portrait, r.portrait));
-            else if (!string.IsNullOrEmpty(r.image)) StartCoroutine(LoadImage(_portrait, r.image));
+            var portraitUrl = !string.IsNullOrEmpty(r.portrait) ? r.portrait
+                : !string.IsNullOrEmpty(r.image) ? r.image : null;
+            if (!string.IsNullOrEmpty(portraitUrl))
+            {
+                _portraitGo.SetActive(true);
+                SetStoryLogTop(450);
+                StartCoroutine(LoadImage(_portrait, portraitUrl));
+            }
+            else
+            {
+                _portraitGo.SetActive(false);
+                SetStoryLogTop(210);
+            }
 
             SetStatBar(r);
             SetChapterBanner(r);
@@ -705,7 +740,7 @@ namespace NightTale
             rt.pivot = new Vector2(0.5f, 1);
             var t = go.GetComponent<Text>();
             t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            t.text = text; t.fontSize = 36; t.alignment = TextAnchor.UpperLeft;
+            t.text = text; t.fontSize = 40; t.alignment = TextAnchor.UpperLeft;
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
             t.verticalOverflow = VerticalWrapMode.Overflow;
             t.color = kind == StoryKind.Player ? new Color(0.55f, 0.8f, 1f)
@@ -766,7 +801,16 @@ namespace NightTale
         private void SetPortrait(string url)
         {
             if (string.IsNullOrEmpty(url)) return;
+            _portraitGo.SetActive(true);
+            SetStoryLogTop(450);
             StartCoroutine(LoadImage(_portrait, url));
+        }
+
+        private void SetStoryLogTop(float fromTop)
+        {
+            if (_storyLogRect == null) return;
+            var om = _storyLogRect.offsetMax;
+            _storyLogRect.offsetMax = new Vector2(om.x, -fromTop);
         }
 
         // ---- odds / extras -----------------------------------------------------
@@ -949,9 +993,9 @@ namespace NightTale
             go.transform.SetParent(_choicesPanel, false);
             var cr = go.GetComponent<RectTransform>();
             cr.anchorMin = new Vector2(0, 1); cr.anchorMax = new Vector2(1, 1);
-            cr.pivot = new Vector2(0.5f, 1); cr.sizeDelta = new Vector2(0, 110);
+            cr.pivot = new Vector2(0.5f, 1); cr.sizeDelta = new Vector2(0, 84);
             go.GetComponent<Image>().color = new Color(0.16f, 0.16f, 0.28f);
-            var txt = Text("ChoiceLabel", go.transform, label, 34, TextAnchor.MiddleCenter);
+            var txt = Text("ChoiceLabel", go.transform, label, 33, TextAnchor.MiddleCenter);
             txt.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 1, 0, 0, 0, 0);
             var a = action;
             go.GetComponent<Button>().onClick.AddListener(() => Choose(a));
@@ -1045,26 +1089,32 @@ namespace NightTale
             var sf = _authSignupForm.GetComponent<RectTransform>();
             sf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
 
-            _suName = MakeInputField("SuName", sf, "Display name");
-            _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
-            _suUsername = MakeInputField("SuUsername", sf, "Username");
-            _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -140, 0, -230);
-            _suEmail = MakeInputField("SuEmail", sf, "Email");
-            _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -240, 0, -330);
-            _suPassword = MakeInputField("SuPassword", sf, "Password (min 6 chars)", InputField.ContentType.Password);
-            _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -340, 0, -430);
+            _suName = MakeInputField("SuName", sf, "How should we call you?");
+            _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -64, 0, -144);
+            AddFieldLabel(sf, "Display name", 40, 62);
+            _suUsername = MakeInputField("SuUsername", sf, "pick a username");
+            _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -174, 0, -254);
+            AddFieldLabel(sf, "Username", 150, 172);
+            _suEmail = MakeInputField("SuEmail", sf, "you@example.com");
+            _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -284, 0, -364);
+            AddFieldLabel(sf, "Email", 260, 282);
+            _suPassword = MakeInputField("SuPassword", sf, "6+ characters", InputField.ContentType.Password);
+            _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -394, 0, -474);
+            AddFieldLabel(sf, "Password", 370, 392);
             _suTos = Toggle("Tos", sf, "I am 18+ and accept the Terms of Service.");
-            _suTos.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -500, 0, -436);
+            _suTos.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -500, 0, -440);
 
             // Login form.
             _authLoginForm = new GameObject("LoginForm", typeof(RectTransform));
             _authLoginForm.transform.SetParent(card, false);
             var lf = _authLoginForm.GetComponent<RectTransform>();
             lf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
-            _liIdentifier = MakeInputField("LiIdentifier", lf, "Username or email");
-            _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
-            _liPassword = MakeInputField("LiPassword", lf, "Password", InputField.ContentType.Password);
-            _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -140, 0, -230);
+            _liIdentifier = MakeInputField("LiIdentifier", lf, "username or email");
+            _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -64, 0, -144);
+            AddFieldLabel(lf, "Username or email", 40, 62);
+            _liPassword = MakeInputField("LiPassword", lf, "password", InputField.ContentType.Password);
+            _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -174, 0, -254);
+            AddFieldLabel(lf, "Password", 150, 172);
 
             _authError = Text("AuthError", card, "", 30, TextAnchor.UpperLeft, new Color(1f, 0.5f, 0.5f));
             _authError.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 0, 30, 130, -30, 200);
@@ -1087,6 +1137,12 @@ namespace NightTale
                 _authBlurb.text = signup
                     ? "Create a free account \u2014 25 free turns, keep your progress, and watch ads for +5 turns each."
                     : "Log in to continue your stories.";
+        }
+
+        private void AddFieldLabel(Transform parent, string label, float fromTop, float toTop)
+        {
+            var t = Text("Label_" + label, parent, label, 26, TextAnchor.MiddleLeft, new Color(1, 1, 1, 0.75f));
+            t.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -toTop, 0, -fromTop);
         }
 
         private void SubmitAuth()
