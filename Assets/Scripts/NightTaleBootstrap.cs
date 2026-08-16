@@ -953,40 +953,36 @@ namespace NightTale
             }
 
             // buttons[] (stage engine) or choices[] (legacy text list).
-            int added = 0;
             if (r.buttons != null && r.buttons.Count > 0)
             {
+                int i = 0;
                 foreach (var b in r.buttons)
                 {
-                    var label = b.label;
-                    if (!string.IsNullOrEmpty(b.description) && b.description != b.label)
-                        label = b.label + " \u2014 " + b.description;
-                    AddChoiceButton(label, b.action, added);
-                    added++;
+                    // HTML5 shows the short label ("A"/"B") as a chip plus the description.
+                    string text;
+                    if (string.IsNullOrEmpty(b.description) || b.description == b.label)
+                        text = b.label;
+                    else
+                        text = b.label + ". " + b.description;
+                    AddChoiceButton(text, b.action, i);
+                    i++;
                 }
             }
             else if (r.choices != null && r.choices.Count > 0)
             {
                 for (int i = 0; i < r.choices.Count; i++)
                 {
-                    AddChoiceButton(r.choices[i], r.choices[i], added);
-                    added++;
+                    AddChoiceButton(r.choices[i], r.choices[i], i);
                 }
             }
-
-            if (added == 0)
-            {
-                var t = Text("NoChoices", _choicesPanel, "No actions available.", 34);
-                var trt = t.GetComponent<RectTransform>();
-                trt.anchorMin = new Vector2(0, 1); trt.anchorMax = new Vector2(1, 1);
-                trt.pivot = new Vector2(0.5f, 1); trt.sizeDelta = new Vector2(0, 100);
-            }
+            // Note: no "No actions available" fallback — the free-text input bar is
+            // always present, matching the HTML5 client.
         }
 
         private void AddChoiceButton(string label, string action, int index)
         {
             // Compress: cap length, then lay out in a 2-column grid.
-            if (label.Length > 60) label = label.Substring(0, 57) + "...";
+            if (label.Length > 110) label = label.Substring(0, 107) + "...";
             int row = index / 2;
             int col = index % 2;
             var go = new GameObject("Choice", typeof(RectTransform), typeof(Image), typeof(Button));
