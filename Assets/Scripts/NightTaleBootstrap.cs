@@ -198,7 +198,7 @@ namespace NightTale
             go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(0, 96);
-            go.GetComponent<Image>().color = new Color(0.13f, 0.13f, 0.2f);
+            go.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.3f);
             var field = go.GetComponent<InputField>();
 
             var textGo = new GameObject("Text", typeof(RectTransform), typeof(Text));
@@ -216,7 +216,7 @@ namespace NightTale
             var ph = phGo.GetComponent<Text>();
             ph.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             ph.text = placeholder; ph.fontSize = 34; ph.fontStyle = FontStyle.Italic;
-            ph.alignment = TextAnchor.MiddleLeft; ph.color = new Color(1f, 1f, 1f, 0.4f);
+            ph.alignment = TextAnchor.MiddleLeft; ph.color = new Color(1f, 1f, 1f, 0.6f);
             ph.supportRichText = false;
             var phRt = phGo.GetComponent<RectTransform>();
             phRt.anchorMin = Vector2.zero; phRt.anchorMax = Vector2.one;
@@ -1089,18 +1089,14 @@ namespace NightTale
             var sf = _authSignupForm.GetComponent<RectTransform>();
             sf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
 
-            _suName = MakeInputField("SuName", sf, "How should we call you?");
-            _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -64, 0, -144);
-            AddFieldLabel(sf, "Display name", 40, 62);
-            _suUsername = MakeInputField("SuUsername", sf, "pick a username");
-            _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -174, 0, -254);
-            AddFieldLabel(sf, "Username", 150, 172);
-            _suEmail = MakeInputField("SuEmail", sf, "you@example.com");
-            _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -284, 0, -364);
-            AddFieldLabel(sf, "Email", 260, 282);
-            _suPassword = MakeInputField("SuPassword", sf, "6+ characters", InputField.ContentType.Password);
-            _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -394, 0, -474);
-            AddFieldLabel(sf, "Password", 370, 392);
+            _suName = MakeInputField("SuName", sf, "Display name");
+            _suName.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
+            _suUsername = MakeInputField("SuUsername", sf, "Username");
+            _suUsername.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -150, 0, -240);
+            _suEmail = MakeInputField("SuEmail", sf, "Email");
+            _suEmail.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -260, 0, -350);
+            _suPassword = MakeInputField("SuPassword", sf, "Password (min 6 chars)", InputField.ContentType.Password);
+            _suPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -370, 0, -460);
             _suTos = Toggle("Tos", sf, "I am 18+ and accept the Terms of Service.");
             _suTos.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -500, 0, -440);
 
@@ -1109,12 +1105,10 @@ namespace NightTale
             _authLoginForm.transform.SetParent(card, false);
             var lf = _authLoginForm.GetComponent<RectTransform>();
             lf.SetAnchor(0, 0, 1, 1, 30, 60, -30, -650);
-            _liIdentifier = MakeInputField("LiIdentifier", lf, "username or email");
-            _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -64, 0, -144);
-            AddFieldLabel(lf, "Username or email", 40, 62);
-            _liPassword = MakeInputField("LiPassword", lf, "password", InputField.ContentType.Password);
-            _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -174, 0, -254);
-            AddFieldLabel(lf, "Password", 150, 172);
+            _liIdentifier = MakeInputField("LiIdentifier", lf, "Username or email");
+            _liIdentifier.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -40, 0, -130);
+            _liPassword = MakeInputField("LiPassword", lf, "Password", InputField.ContentType.Password);
+            _liPassword.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -150, 0, -240);
 
             _authError = Text("AuthError", card, "", 30, TextAnchor.UpperLeft, new Color(1f, 0.5f, 0.5f));
             _authError.GetComponent<RectTransform>().SetAnchor(0, 0, 1, 0, 30, 130, -30, 200);
@@ -1137,12 +1131,6 @@ namespace NightTale
                 _authBlurb.text = signup
                     ? "Create a free account \u2014 25 free turns, keep your progress, and watch ads for +5 turns each."
                     : "Log in to continue your stories.";
-        }
-
-        private void AddFieldLabel(Transform parent, string label, float fromTop, float toTop)
-        {
-            var t = Text("Label_" + label, parent, label, 26, TextAnchor.MiddleLeft, new Color(1, 1, 1, 0.75f));
-            t.GetComponent<RectTransform>().SetAnchor(0, 1, 1, 1, 0, -toTop, 0, -fromTop);
         }
 
         private void SubmitAuth()
